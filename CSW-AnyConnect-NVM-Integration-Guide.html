@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Cisco Secure Workload — AnyConnect NVM Integration Guide</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:900px;margin:2rem auto;padding:0 1.5rem;color:#1a1a2e;line-height:1.65}h1{font-size:1.8rem;border-bottom:2px solid #005073;padding-bottom:.5rem}h2{font-size:1.3rem;margin-top:2rem;color:#005073}h3{font-size:1.1rem;color:#333}code{background:#f4f4f4;padding:.15em .4em;border-radius:3px;font-size:.9em}pre{background:#f4f4f4;padding:1rem;border-radius:4px;overflow-x:auto}table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.92em}th{background:#005073;color:#fff;padding:.5rem .75rem;text-align:left}td{padding:.45rem .75rem;border-bottom:1px solid #e2e2e2}tr:nth-child(even) td{background:#f9f9f9}blockquote{border-left:4px solid #005073;margin:0;padding:.5rem 1rem;background:#f0f7fb;color:#444}a{color:#0066cc}
+</style>
+</head>
+<body>
+<h1 id="cisco-secure-workload-anyconnect-nvm-integration-guide">Cisco
+Secure Workload — AnyConnect NVM Integration Guide</h1>
+<blockquote>
+<p><strong>Disclaimer:</strong> Community reference guide by Cisco
+Solutions Engineering. Always consult <a href="https://www.cisco.com/c/en/us/products/security/tetration/index.html">official
+Cisco Secure Workload documentation</a> for authoritative guidance.</p>
+</blockquote>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#1-overview">Overview</a></li>
+<li><a href="#2-architecture">Architecture</a></li>
+<li><a href="#3-what-csw-gets-from-anyconnect-nvm">What CSW Gets from
+AnyConnect NVM</a></li>
+<li><a href="#4-use-cases">Use Cases</a></li>
+<li><a href="#5-prerequisites">Prerequisites</a></li>
+<li><a href="#6-step-a--deploy-anyconnect-nvm-on-endpoints">Step A —
+Deploy AnyConnect NVM on Endpoints</a></li>
+<li><a href="#7-step-b--configure-the-anyconnect-connector-on-csw">Step
+B — Configure the AnyConnect Connector on CSW</a></li>
+<li><a href="#8-optional-ldap-integration-for-user-labels">Optional:
+LDAP Integration for User Labels</a></li>
+<li><a href="#9-verification">Verification</a></li>
+<li><a href="#10-limits">Limits</a></li>
+<li><a href="#11-troubleshooting">Troubleshooting</a></li>
+<li><a href="#12-related-resources">Related Resources</a></li>
+</ol>
+<hr />
+<h2 id="overview">1. Overview</h2>
+<p><strong>Cisco AnyConnect Network Visibility Module (NVM)</strong>
+provides endpoint-level telemetry — process-level flows, user identity,
+device context, and FQDN of destinations — from managed endpoints
+running <strong>Cisco AnyConnect Secure Mobility Client</strong>.</p>
+<p>Unlike the CSW deep-visibility agent (which requires installation on
+each workload), AnyConnect NVM uses the existing AnyConnect client
+already deployed on laptops, desktops, and VPN endpoints. Flow records
+are exported in <strong>IPFIX format</strong> to the <strong>AnyConnect
+Connector</strong> on a CSW Edge appliance, giving CSW full flow
+visibility from user endpoints both <strong>on-premises and off-premises
+(VPN)</strong>.</p>
+<h3 id="why-it-matters">Why it matters</h3>
+<ul>
+<li>Endpoint visibility <strong>without deploying a separate CSW
+agent</strong> on each device</li>
+<li>Captures <strong>process-level flow context</strong> — which
+application initiated the connection</li>
+<li>Extends CSW visibility to <strong>roaming and remote users</strong>
+connected via VPN</li>
+<li>Adds <strong>user identity</strong> to flows via LDAP/AD
+integration</li>
+</ul>
+<h3 id="minimum-versions-required">Minimum versions required</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Minimum Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cisco AnyConnect NVM</td>
+<td>4.2+ (NVM record type support)</td>
+</tr>
+<tr>
+<td>Cisco AnyConnect NVM (agent version reporting)</td>
+<td>4.9+</td>
+</tr>
+<tr>
+<td>Cisco Secure Workload</td>
+<td>3.x+</td>
+</tr>
+<tr>
+<td>NVM IPFIX collector port</td>
+<td>UDP/TCP <strong>4739</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="architecture">2. Architecture</h2>
+<pre><code>┌────────────────────────────────────────────────────────────────────┐
+│                     Enterprise + Remote Endpoints                   │
+│                                                                     │
+│  ┌──────────────────┐        ┌──────────────────────────────────┐  │
+│  │  Laptop / Desktop│        │   Remote (VPN) Endpoint           │  │
+│  │  AnyConnect NVM  │        │   AnyConnect NVM                  │  │
+│  │  (On-prem)       │        │   (Off-prem, VPN tunnel)          │  │
+│  └────────┬─────────┘        └──────────┬───────────────────────┘  │
+│           │  IPFIX (UDP 4739)           │  IPFIX via VPN tunnel     │
+│           └──────────────────┬──────────┘                          │
+│                              ▼                                      │
+│             ┌────────────────────────────────────┐                 │
+│             │     CSW Edge Appliance              │                 │
+│             │     (AnyConnect Connector)          │                 │
+│             │                                     │                 │
+│             │  • Receives IPFIX from endpoints    │                 │
+│             │  • Registers endpoints as agents    │                 │
+│             │  • Forwards flows to CSW collectors │                 │
+│             │  • Labels endpoints via LDAP        │                 │
+│             └────────────────┬───────────────────┘                 │
+│                              │                                      │
+│             ┌────────────────▼───────────────────┐                 │
+│             │  Cisco Secure Workload Cluster      │                 │
+│             │  • Flow analysis &amp; ADM              │                 │
+│             │  • Endpoint inventory with labels   │                 │
+│             │  • Policy based on user + process   │                 │
+│             └────────────────────────────────────┘                 │
+└────────────────────────────────────────────────────────────────────┘</code></pre>
+<hr />
+<h2 id="what-csw-gets-from-anyconnect-nvm">3. What CSW Gets from
+AnyConnect NVM</h2>
+<p>AnyConnect NVM generates three IPFIX record types:</p>
+<h3 id="endpoint-record">Endpoint Record</h3>
+<p>Registers the device in CSW inventory:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UDID</td>
+<td>Unique device identifier</td>
+<td><code>a1b2c3d4-...</code></td>
+</tr>
+<tr>
+<td>Hostname</td>
+<td>Endpoint hostname</td>
+<td><code>LAPTOP-JSMITH</code></td>
+</tr>
+<tr>
+<td>OS Name</td>
+<td>Operating system</td>
+<td><code>Windows 10</code></td>
+</tr>
+<tr>
+<td>OS Version</td>
+<td>OS version</td>
+<td><code>10.0.19044</code></td>
+</tr>
+<tr>
+<td>Manufacturer</td>
+<td>Device manufacturer</td>
+<td><code>Dell Inc.</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="interface-record">Interface Record</h3>
+<p>Network interface details per endpoint (IP addresses, MACs, interface
+type).</p>
+<h3 id="flow-record">Flow Record</h3>
+<p>Per-flow telemetry with full application and user context:</p>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 44%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5-tuple</td>
+<td>src/dst IP:port + protocol</td>
+<td><code>10.20.30.41:50234 → 10.100.1.5:443 TCP</code></td>
+</tr>
+<tr>
+<td>Bytes in/out</td>
+<td>Traffic volume</td>
+<td><code>12400 / 890</code></td>
+</tr>
+<tr>
+<td>Process name</td>
+<td>Application that initiated the flow</td>
+<td><code>chrome.exe</code></td>
+</tr>
+<tr>
+<td>Process path</td>
+<td>Full path to the binary</td>
+<td><code>C:\Program Files\Google\Chrome\chrome.exe</code></td>
+</tr>
+<tr>
+<td>Username</td>
+<td>Logged-in user</td>
+<td><code>corp\jsmith</code></td>
+</tr>
+<tr>
+<td>FQDN</td>
+<td>Destination DNS name</td>
+<td><code>api.internal.corp.com</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="use-cases">4. Use Cases</h2>
+<h3 id="use-case-1-application-level-microsegmentation-from-endpoints">Use
+Case 1 — Application-Level Microsegmentation from Endpoints</h3>
+<p><strong>Scenario:</strong> Understand which applications on endpoints
+are connecting to sensitive servers.</p>
+<p>CSW ADM shows <code>chrome.exe</code> on Finance laptops connecting
+to production database APIs — helping security teams identify shadow
+access patterns and build precise allow policies.</p>
+<h3 id="use-case-2-remote-user-visibility-vpn-endpoints">Use Case 2 —
+Remote User Visibility (VPN Endpoints)</h3>
+<p><strong>Scenario:</strong> Security team needs full flow visibility
+for VPN-connected remote workers.</p>
+<p>AnyConnect NVM tunnels IPFIX records through the VPN connection to
+the AnyConnect Connector on-premises. Remote users appear in CSW
+inventory with the same flow fidelity as on-premise workloads.</p>
+<h3 id="use-case-3-user-based-policy-with-process-context">Use Case 3 —
+User-Based Policy with Process Context</h3>
+<p><strong>Scenario:</strong> Allow only specific applications on
+endpoints to reach production app servers.</p>
+<p>Using LDAP integration, flows are labeled with AD username. Combine
+with process labels to write policies like: -
+<code>Finance-User-Endpoints + process=TradingApp → Trading-Servers: ALLOW TCP 8443</code>
+-
+<code>Any-Endpoint + process=chrome.exe → Trading-Servers: DENY</code></p>
+<h3 id="use-case-4-shadow-it-detection">Use Case 4 — Shadow IT
+Detection</h3>
+<p><strong>Scenario:</strong> Detect unauthorized SaaS or cloud usage
+from corporate endpoints.</p>
+<p>FQDN of destination is captured in flow records. Flows to unexpected
+external destinations from sensitive endpoint scopes trigger CSW Traffic
+Alerts.</p>
+<hr />
+<h2 id="prerequisites">5. Prerequisites</h2>
+<h3 id="on-endpoints">On endpoints</h3>
+<ul class="task-list">
+<li><label><input type="checkbox"></input>Cisco AnyConnect Secure Mobility
+Client <strong>4.2+</strong> installed</label></li>
+<li><label><input type="checkbox"></input><strong>Network Visibility Module
+(NVM)</strong> enabled in AnyConnect</label></li>
+<li><label><input type="checkbox"></input>NVM profile configured with IPFIX
+collector pointing to CSW Edge appliance IP on <strong>UDP
+4739</strong></label></li>
+<li><label><input type="checkbox"></input>NVM profiles deployed via ASA/FTD
+headend, ISE, or MDM (Intune/JAMF)</label></li>
+</ul>
+<h3 id="csw-infrastructure">CSW / infrastructure</h3>
+<ul class="task-list">
+<li><label><input type="checkbox"></input><strong>CSW Edge appliance</strong>
+deployed and registered (AnyConnect connector runs on Edge)</label></li>
+<li><label><input type="checkbox"></input>Edge appliance reachable from
+endpoints on <strong>UDP port 4739</strong></label></li>
+<li><label><input type="checkbox"></input>VPN headend (ASA/FTD) configured to
+allow IPFIX passthrough on port 4739</label></li>
+<li><label><input type="checkbox"></input>VRF configuration on Edge appliance
+covers the endpoint subnet(s)</label></li>
+<li><label><input type="checkbox"></input>(Optional) LDAP/AD server reachable
+from Edge appliance for user label enrichment</label></li>
+</ul>
+<hr />
+<h2 id="step-a-deploy-anyconnect-nvm-on-endpoints">6. Step A — Deploy
+AnyConnect NVM on Endpoints</h2>
+<h3 id="a1-create-the-nvm-profile">A1 — Create the NVM profile</h3>
+<p>The NVM profile is an XML file that tells AnyConnect NVM where to
+send IPFIX records.</p>
+<p>Create <code>NVM_Profile.xml</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span> <span class="ot">version=</span><span class="st">&quot;1.0&quot;</span> <span class="ot">encoding=</span><span class="st">&quot;UTF-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">NVMProfile</span> <span class="ot">xmlns=</span><span class="st">&quot;http://schemas.xmlsoap.org/encoding/&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>            <span class="ot">xmlns:xsi=</span><span class="st">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">CollectorConfig</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Collector</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">CollectorAddress</span>&gt;10.x.x.x&lt;/<span class="kw">CollectorAddress</span>&gt;  <span class="co">&lt;!-- CSW Edge appliance IP --&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">CollectorPort</span>&gt;4739&lt;/<span class="kw">CollectorPort</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">CollectorProtocol</span>&gt;UDP&lt;/<span class="kw">CollectorProtocol</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Collector</span>&gt;</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">CollectorConfig</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">FlowExportConfig</span>&gt;</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">FlowInactiveTimeout</span>&gt;15&lt;/<span class="kw">FlowInactiveTimeout</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">FlowActiveTimeout</span>&gt;60&lt;/<span class="kw">FlowActiveTimeout</span>&gt;</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">FlowExportConfig</span>&gt;</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">NVMProfile</span>&gt;</span></code></pre></div>
+<p>Replace <code>10.x.x.x</code> with the IP of your CSW Edge
+appliance.</p>
+<h3 id="a2-deploy-the-nvm-profile">A2 — Deploy the NVM profile</h3>
+<p><strong>Option A — Via Cisco ASA/FTD headend:</strong> 1. Upload
+<code>NVM_Profile.xml</code> to the ASA/FTD group policy 2. Under
+<strong>AnyConnect Client Profile</strong>, select NVM profile type and
+upload the XML 3. Assign the profile to the connection profile / tunnel
+group</p>
+<p><strong>Option B — Via Cisco ISE (MDM-managed):</strong> 1. In ISE,
+navigate to <strong>Policy &gt; Policy Elements &gt; Results &gt; Client
+Provisioning</strong> 2. Create an AnyConnect Configuration with the NVM
+profile included 3. Assign via posture policy or provisioning portal</p>
+<p><strong>Option C — Manual (lab/testing):</strong> Copy
+<code>NVM_Profile.xml</code> to the endpoint: - Windows:
+<code>C:\ProgramData\Cisco\Cisco AnyConnect Secure Mobility Client\NVM\</code>
+- macOS: <code>/opt/cisco/anyconnect/nvm/</code></p>
+<h3 id="a3-verify-nvm-is-sending-ipfix">A3 — Verify NVM is sending
+IPFIX</h3>
+<p>On the endpoint, check AnyConnect NVM statistics: -
+<strong>Windows:</strong> Right-click AnyConnect tray → Statistics → NVM
+tab - Confirm “Flows Exported” counter is incrementing</p>
+<p>On the CSW Edge appliance, use:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tcpdump</span> <span class="at">-i</span> any <span class="at">-n</span> port 4739</span></code></pre></div>
+<p>You should see IPFIX packets arriving from endpoint IPs.</p>
+<hr />
+<h2 id="step-b-configure-the-anyconnect-connector-on-csw">7. Step B —
+Configure the AnyConnect Connector on CSW</h2>
+<h3 id="b1-navigate-to-connector-configuration">B1 — Navigate to
+connector configuration</h3>
+<ol type="1">
+<li>In CSW UI: <strong>Manage &gt; Virtual Appliances</strong></li>
+<li>Select your <strong>Edge appliance</strong></li>
+<li>Click <strong>Connectors</strong> tab → <strong>+ Add
+Connector</strong> → <strong>AnyConnect</strong></li>
+</ol>
+<h3 id="b2-configure-connector-settings">B2 — Configure connector
+settings</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Connector Name</strong></td>
+<td>e.g., <code>anyconnect-nvm-connector</code></td>
+</tr>
+<tr>
+<td><strong>Connector Type</strong></td>
+<td>AnyConnect</td>
+</tr>
+<tr>
+<td><strong>LDAP Configuration</strong></td>
+<td>(Optional — see Section 8)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b3-configure-vrf-assignment">B3 — Configure VRF assignment</h3>
+<p>AnyConnect endpoints must be associated with a VRF: 1. Navigate to
+<strong>Manage &gt; Workloads &gt; Agents &gt; Configuration
+tab</strong> 2. Under <strong>Agent Remote VRF Configurations</strong> →
+<strong>Create Config</strong> 3. Provide: - VRF Name - IP subnet CIDR
+covering endpoint addresses - Port range (typically
+<code>4739-4739</code>)</p>
+<h3 id="b4-apply-configuration">B4 — Apply configuration</h3>
+<p>Click <strong>Test and Apply</strong>. The connector will: 1. Start
+listening for IPFIX on UDP 4739 2. Register as a proxy agent with the
+CSW cluster 3. Begin forwarding endpoint flows to CSW collectors</p>
+<hr />
+<h2 id="optional-ldap-integration-for-user-labels">8. Optional: LDAP
+Integration for User Labels</h2>
+<p>The AnyConnect connector can enrich endpoint flows with LDAP/AD user
+attributes, labeling each endpoint IP with the logged-in user’s AD
+attributes.</p>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LDAP Server</td>
+<td>FQDN of AD/LDAP server</td>
+</tr>
+<tr>
+<td>LDAP Port</td>
+<td>636 (LDAPS) or 389</td>
+</tr>
+<tr>
+<td>Bind Username</td>
+<td>Service account DN</td>
+</tr>
+<tr>
+<td>Bind Password</td>
+<td>Service account password</td>
+</tr>
+<tr>
+<td>Username Attribute</td>
+<td>Attribute mapping to NVM username (e.g.,
+<code>sAMAccountName</code>)</td>
+</tr>
+<tr>
+<td>Additional Attributes</td>
+<td>Up to 6 AD attributes (e.g., <code>department</code>,
+<code>title</code>, <code>manager</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>With LDAP configured, CSW inventory shows:</p>
+<pre><code>IP: 10.20.30.41
+  user/username   = jsmith
+  user/department = Finance
+  user/title      = Analyst</code></pre>
+<hr />
+<h2 id="verification">9. Verification</h2>
+<h3 id="check-connector-status">Check connector status</h3>
+<p><strong>Manage &gt; Virtual Appliances &gt; [Edge] &gt;
+Connectors</strong> AnyConnect connector should show <strong>Status:
+Active</strong></p>
+<h3 id="check-endpoint-inventory">Check endpoint inventory</h3>
+<ol type="1">
+<li><strong>Inventory &gt; Workloads</strong> → search for an endpoint
+IP</li>
+<li>Confirm endpoint appears with type
+<code>AnyConnect Agent</code></li>
+<li>If LDAP configured, confirm user labels are present</li>
+</ol>
+<h3 id="check-flow-data">Check flow data</h3>
+<ol type="1">
+<li><strong>Observe &gt; Traffic</strong> → filter by source = endpoint
+subnet</li>
+<li>Confirm flows appear with process context (<code>proc/name</code>,
+<code>proc/path</code>)</li>
+</ol>
+<h3 id="verify-ipfix-reception-on-edge-appliance">Verify IPFIX reception
+on Edge appliance</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># On Edge appliance:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">netstat</span> <span class="at">-anu</span> <span class="kw">|</span> <span class="fu">grep</span> 4739          <span class="co"># confirm port is listening</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> /usr/local/tet/log/anyconnect-connector.log</span></code></pre></div>
+<hr />
+<h2 id="limits">10. Limits</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AnyConnect connectors per Edge appliance</td>
+<td>1</td>
+</tr>
+<tr>
+<td>AnyConnect connectors per tenant</td>
+<td>1</td>
+</tr>
+<tr>
+<td>IPFIX collector port</td>
+<td>UDP 4739 (fixed)</td>
+</tr>
+<tr>
+<td>Maximum endpoints per connector</td>
+<td>Platform dependent</td>
+</tr>
+<tr>
+<td>Agent check-in interval</td>
+<td>Every 20–30 minutes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="troubleshooting">11. Troubleshooting</h2>
+<table>
+<colgroup>
+<col style="width: 56%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Endpoints not appearing in inventory</td>
+<td>Verify IPFIX packets reaching Edge on UDP 4739; check VRF assignment
+matches endpoint subnet</td>
+</tr>
+<tr>
+<td>No user labels</td>
+<td>Confirm LDAP configuration is correct; verify service account has
+read permissions</td>
+</tr>
+<tr>
+<td>Flow data missing process context</td>
+<td>Confirm NVM version ≥ 4.2; check NVM profile is correctly deployed
+on endpoint</td>
+</tr>
+<tr>
+<td>Connector shows disconnected</td>
+<td>Restart connector from CSW UI; check Edge appliance logs</td>
+</tr>
+<tr>
+<td>VPN endpoints not showing</td>
+<td>Verify VPN headend allows IPFIX (UDP 4739) through the tunnel</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related-resources">12. Related Resources</h2>
+<table>
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 38%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Description</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/chandrapati/csw-ise-integration">csw-ise-integration</a></td>
+<td>ISE/pxGrid: user-identity–aware policy via pxGrid 2.0</td>
+<td>Identity + AnyConnect pairing</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Secure-Firewall-Integration-Guide">CSW-Secure-Firewall-Integration-Guide</a></td>
+<td>NSEL flow ingestion from Cisco Secure Firewall</td>
+<td>Network-layer visibility</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/csw-splunk-integration">csw-splunk-integration</a></td>
+<td>CSW syslog alerts → Splunk SIEM</td>
+<td>SecOps alerting</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Agent-Installation-Guide">CSW-Agent-Installation-Guide</a></td>
+<td>Deploy CSW agents on Linux/Windows workloads</td>
+<td>Server-side agent deployment</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Policy-Lifecycle">CSW-Policy-Lifecycle</a></td>
+<td>Policy discovery → enforcement workflow</td>
+<td>Policy management</td>
+</tr>
+<tr>
+<td><a href="https://github.com/chandrapati/CSW-Operations-Toolkit">CSW-Operations-Toolkit</a></td>
+<td>Day-2 ops scripts: health checks, reporting</td>
+<td>Ongoing operations</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Suggested pairing:</strong> Deploy <strong>ISE
+connector</strong> alongside <strong>AnyConnect NVM</strong> for full
+user + device + flow context in a single CSW tenant.</p>
+</blockquote>
+<hr />
+<p><em>Community reference — Cisco Solutions Engineering. Not an
+official Cisco product document.</em></p>
+</body>
+</html>
