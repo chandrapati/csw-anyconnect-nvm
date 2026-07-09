@@ -18,7 +18,7 @@ AnyConnect NVM endpoint flow telemetry: process-level flows, user identity, VPN 
 
 ---
 
-## Related Cisco Secure Workload Resources
+## CSW Integration Guides & Resources
 
 | Repository | Description | Best for |
 |------------|-------------|---------|
