@@ -22,7 +22,7 @@
 
 **Cisco AnyConnect Network Visibility Module (NVM)** provides endpoint-level telemetry — process-level flows, user identity, device context, and FQDN of destinations — from managed endpoints running **Cisco AnyConnect Secure Mobility Client**.
 
-Unlike the CSW deep-visibility agent (which requires installation on each workload), AnyConnect NVM uses the existing AnyConnect client already deployed on laptops, desktops, and VPN endpoints. Flow records are exported in **IPFIX format** to the **AnyConnect Connector** on a CSW Edge appliance, giving CSW full flow visibility from user endpoints both **on-premises and off-premises (VPN)**.
+Unlike the CSW deep-visibility agent (which requires installation on each workload), AnyConnect NVM uses the existing AnyConnect client already deployed on laptops, desktops, and VPN endpoints. Flow records are exported in **IPFIX format** to the **AnyConnect Connector** on a CSW Ingest appliance, giving CSW full flow visibility from user endpoints both **on-premises and off-premises (VPN)**.
 
 ### Why it matters
 - Endpoint visibility **without deploying a separate CSW agent** on each device
@@ -56,7 +56,7 @@ Unlike the CSW deep-visibility agent (which requires installation on each worklo
 │           └──────────────────┬──────────┘                          │
 │                              ▼                                      │
 │             ┌────────────────────────────────────┐                 │
-│             │     CSW Edge Appliance              │                 │
+│             │     CSW Ingest Appliance            │                 │
 │             │     (AnyConnect Connector)          │                 │
 │             │                                     │                 │
 │             │  • Receives IPFIX from endpoints    │                 │
@@ -139,15 +139,15 @@ FQDN of destination is captured in flow records. Flows to unexpected external de
 ### On endpoints
 - [ ] Cisco AnyConnect Secure Mobility Client **4.2+** installed
 - [ ] **Network Visibility Module (NVM)** enabled in AnyConnect
-- [ ] NVM profile configured with IPFIX collector pointing to CSW Edge appliance IP on **UDP 4739**
+- [ ] NVM profile configured with IPFIX collector pointing to CSW Ingest appliance IP on **UDP 4739**
 - [ ] NVM profiles deployed via ASA/FTD headend, ISE, or MDM (Intune/JAMF)
 
 ### CSW / infrastructure
-- [ ] **CSW Edge appliance** deployed and registered (AnyConnect connector runs on Edge)
-- [ ] Edge appliance reachable from endpoints on **UDP port 4739**
+- [ ] **CSW Ingest appliance** deployed and registered (AnyConnect connector runs on Ingest)
+- [ ] Ingest appliance reachable from endpoints on **UDP port 4739**
 - [ ] VPN headend (ASA/FTD) configured to allow IPFIX passthrough on port 4739
-- [ ] VRF configuration on Edge appliance covers the endpoint subnet(s)
-- [ ] (Optional) LDAP/AD server reachable from Edge appliance for user label enrichment
+- [ ] VRF configuration on Ingest appliance covers the endpoint subnet(s)
+- [ ] (Optional) LDAP/AD server reachable from Ingest appliance for user label enrichment
 
 ---
 
@@ -164,7 +164,7 @@ Create `NVM_Profile.xml`:
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <CollectorConfig>
     <Collector>
-      <CollectorAddress>10.x.x.x</CollectorAddress>  <!-- CSW Edge appliance IP -->
+      <CollectorAddress>10.x.x.x</CollectorAddress>  <!-- CSW Ingest appliance IP -->
       <CollectorPort>4739</CollectorPort>
       <CollectorProtocol>UDP</CollectorProtocol>
     </Collector>
@@ -176,7 +176,7 @@ Create `NVM_Profile.xml`:
 </NVMProfile>
 ```
 
-Replace `10.x.x.x` with the IP of your CSW Edge appliance.
+Replace `10.x.x.x` with the IP of your CSW Ingest appliance.
 
 ### A2 — Deploy the NVM profile
 
@@ -201,7 +201,7 @@ On the endpoint, check AnyConnect NVM statistics:
 - **Windows:** Right-click AnyConnect tray → Statistics → NVM tab
 - Confirm "Flows Exported" counter is incrementing
 
-On the CSW Edge appliance, use:
+On the CSW Ingest appliance, use:
 ```bash
 tcpdump -i any -n port 4739
 ```
@@ -214,7 +214,7 @@ You should see IPFIX packets arriving from endpoint IPs.
 ### B1 — Navigate to connector configuration
 
 1. In CSW UI: **Manage > Virtual Appliances**
-2. Select your **Edge appliance**
+2. Select your **Ingest appliance**
 3. Click **Connectors** tab → **+ Add Connector** → **AnyConnect**
 
 ### B2 — Configure connector settings
@@ -270,7 +270,7 @@ IP: 10.20.30.41
 ## 9. Verification
 
 ### Check connector status
-**Manage > Virtual Appliances > [Edge] > Connectors**
+**Manage > Virtual Appliances > [Ingest] > Connectors**
 AnyConnect connector should show **Status: Active**
 
 ### Check endpoint inventory
@@ -282,9 +282,9 @@ AnyConnect connector should show **Status: Active**
 1. **Observe > Traffic** → filter by source = endpoint subnet
 2. Confirm flows appear with process context (`proc/name`, `proc/path`)
 
-### Verify IPFIX reception on Edge appliance
+### Verify IPFIX reception on Ingest appliance
 ```bash
-# On Edge appliance:
+# On Ingest appliance:
 netstat -anu | grep 4739          # confirm port is listening
 tail -f /usr/local/tet/log/anyconnect-connector.log
 ```
@@ -295,7 +295,7 @@ tail -f /usr/local/tet/log/anyconnect-connector.log
 
 | Metric | Limit |
 |--------|-------|
-| AnyConnect connectors per Edge appliance | 1 |
+| AnyConnect connectors per Ingest appliance | 1 |
 | AnyConnect connectors per tenant | 1 |
 | IPFIX collector port | UDP 4739 (fixed) |
 | Maximum endpoints per connector | Platform dependent |
@@ -307,10 +307,10 @@ tail -f /usr/local/tet/log/anyconnect-connector.log
 
 | Symptom | Check |
 |---------|-------|
-| Endpoints not appearing in inventory | Verify IPFIX packets reaching Edge on UDP 4739; check VRF assignment matches endpoint subnet |
+| Endpoints not appearing in inventory | Verify IPFIX packets reaching Ingest on UDP 4739; check VRF assignment matches endpoint subnet |
 | No user labels | Confirm LDAP configuration is correct; verify service account has read permissions |
 | Flow data missing process context | Confirm NVM version ≥ 4.2; check NVM profile is correctly deployed on endpoint |
-| Connector shows disconnected | Restart connector from CSW UI; check Edge appliance logs |
+| Connector shows disconnected | Restart connector from CSW UI; check Ingest appliance logs |
 | VPN endpoints not showing | Verify VPN headend allows IPFIX (UDP 4739) through the tunnel |
 
 ---
